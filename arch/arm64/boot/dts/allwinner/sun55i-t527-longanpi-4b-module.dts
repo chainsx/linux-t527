@@ -10,10 +10,6 @@
 	board = "T527", "T527-LM4B";
 	compatible = "allwinner,t527", "arm,sun55iw3p1";
 
-	chosen {
-		bootargs = "root=/dev/mmcblk1p2  mem=4096M rw no_console_suspend consoleblank=0 fsck.fix=yes fsck.repair=yes net.ifnames=0 splash plymouth.ignore-serial-consoles earlycon=uart8250,mmio32,0x02500000 clk_ignore_unused initcall_debug=0 console=ttyAS0,115200 loglevel=8 init=/sbin/init cma=64M";
-	};
-
 	memory@40000000 {
 		device_type = "memory";
 		reg = <0x00000000 0x40000000 0x00000000 0x20000000>;
