@@ -4752,6 +4752,7 @@
 			reg-names = "phy-ctl", "phy-clk";
 			power-domains = <&pd1 A523_PCK_PCIE>;
 			phy_refclk_sel = <0>; /* 0:internal clk; 1:external clk */
+			resets = <&ccu RST_BUS_PCIE_USB3>;
 			#phy-cells = <1>;
 			status = "disabled";
 		};
@@ -4791,8 +4792,6 @@
 			power-domains = <&pd1 A523_PCK_PCIE>;
 			clocks = <&ccu CLK_USB3_REF>, <&ccu CLK_PLL_PERI0_200M>, <&dcxo24M>, <&ccu CLK_PCIE_AUX>;
 			clock-names = "pclk_ref", "pclk_per", "hosc", "pclk_aux";
-			resets = <&ccu RST_BUS_PCIE_USB3>;
-			reset-names = "pclk_rst";
 			status = "disabled";
 		};
 
