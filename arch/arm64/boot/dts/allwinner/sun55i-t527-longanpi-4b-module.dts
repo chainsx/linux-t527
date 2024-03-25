@@ -2381,9 +2381,9 @@
 
 &sdc0 {
 	bus-width = <4>;
-	cd-gpios = <&pio PF 3 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-	/*non-removable;*/
-	/*broken-cd;*/
+	/*cd-gpios = <&pio PF 3 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;*/
+	non-removable;
+	broken-cd;
 	/*cd-inverted*/
 	/*data3-detect;*/
 	/*card-pwr-gpios = <&pio PH 14 1 1 2 0xffffffff>;*/
