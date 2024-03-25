@@ -214,7 +214,9 @@ static int sunxi_drm_fbdev_create(struct drm_fb_helper *fb_helper,
 		fbi->fix.smem_start =
 			page_to_phys(virt_to_page(fbi->screen_buffer));
 #endif
+#if IS_ENABLED(CONFIG_AW_DRM_FBDEV_BOOTLOGO)
 	sunxi_bootlogo_copy(fb_helper);
+#endif
 
 	return 0;
 }

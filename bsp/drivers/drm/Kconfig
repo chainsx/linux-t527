@@ -52,6 +52,13 @@ config AW_DRM_LCD_DSI_COMBO_PHY
 	help
 		If you want lcd-dsi combp phy, select it.
 
+config AW_DRM_FBDEV_BOOTLOGO
+	bool "Support Bootlogo Output from uboot"
+	depends on AW_DRM_LCD
+	default n
+	help
+		If you want bootlogo output for drm driver, select it.
+
 menuconfig AW_DRM_HDMI_TX
 	tristate "Support Hdmi Output"
 	depends on AW_DRM
