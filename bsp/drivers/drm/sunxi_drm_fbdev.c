@@ -41,6 +41,7 @@ static const struct fb_ops sunxi_drm_fbdev_ops = {
 	.fb_imageblit	= drm_fb_helper_cfb_imageblit,
 };
 
+#if IS_ENABLED(CONFIG_AW_DRM_FBDEV_BOOTLOGO)
 static void *fb_map_kernel_cache(unsigned long phys_addr, unsigned long size)
 {
 	int npages = PAGE_ALIGN(size) / PAGE_SIZE;
@@ -148,6 +149,7 @@ out_unmap:
 
 	return 0;
 }
+#endif
 
 static int sunxi_drm_fbdev_create(struct drm_fb_helper *fb_helper,
 				       struct drm_fb_helper_surface_size *sizes)
