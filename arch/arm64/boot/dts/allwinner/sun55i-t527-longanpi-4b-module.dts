@@ -8,7 +8,7 @@
 
 /{
 	board = "T527", "T527-LM4B";
-	compatible = "allwinner,t527", "arm,sun55iw3p1";
+	compatible = "allwinner,t527", "Sipeed,T527-LM4B";
 
 	aliases {
 		pmu0 = &pmu0;
@@ -825,14 +825,14 @@
 	};
 
 	twi1_pins_default: twi1@0 {
-		pins = "PH2", "PH3";
+		pins = "PL8", "PL9";
 		function = "twi1";
 		drive-strength = <10>;
 		bias-pull-up;
 	};
 
 	twi1_pins_sleep: twi1@1 {
-		pins = "PH2", "PH3";
+		pins = "PL8", "PL9";
 		function = "gpio_in";
 	};
 
@@ -2379,6 +2379,33 @@
 	status = "okay";
 };
 
+&sdc2 {
+	non-removable;
+	bus-width = <8>;
+	mmc-ddr-1_8v;
+	mmc-hs200-1_8v;
+	mmc-hs400-1_8v;
+	no-sdio;
+	no-sd;
+	ctl-spec-caps = <0x308>;
+	cap-mmc-highspeed;
+	sunxi-power-save-mode;
+	sunxi-dis-signal-vol-sw;
+	mmc-bootpart-noacc;
+	/*cap-hsq;*/
+	cqe-on;
+	ctl-cmdq-md = <0x2>;
+	max-frequency = <150000000>;
+	/*cd-gpios = <&pio PC 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;*/
+	broken-cd;
+	vmmc-supply = <&reg_cldo3>;
+	/*emmc io vol 3.3v*/
+	/*vqmmc-supply = <&reg_aldo1>;*/
+	/*emmc io vol 1.8v*/
+	vqmmc-supply = <&reg_cldo1>;
+	status = "okay";
+};
+
 &sdc0 {
 	bus-width = <4>;
 	/*cd-gpios = <&pio PF 3 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;*/
@@ -2425,32 +2452,6 @@
 	ignore-pm-notify;
 	max-frequency = <150000000>;
 	ctl-spec-caps = <0x408>;
-	status = "okay";
-};
-
-&sdc2 {
-	non-removable;
-	bus-width = <8>;
-	mmc-ddr-1_8v;
-	mmc-hs200-1_8v;
-	mmc-hs400-1_8v;
-	no-sdio;
-	no-sd;
-	ctl-spec-caps = <0x308>;
-	cap-mmc-highspeed;
-	sunxi-power-save-mode;
-	sunxi-dis-signal-vol-sw;
-	mmc-bootpart-noacc;
-	/*cap-hsq;*/
-	cqe-on;
-	ctl-cmdq-md = <0x2>;
-	max-frequency = <150000000>;
-	cd-gpios = <&pio PC 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-	vmmc-supply = <&reg_cldo3>;
-	/*emmc io vol 3.3v*/
-	/*vqmmc-supply = <&reg_aldo1>;*/
-	/*emmc io vol 1.8v*/
-	vqmmc-supply = <&reg_cldo1>;
 	status = "okay";
 };
 
@@ -2514,19 +2515,18 @@
 &usbc0 {
 	device_type = "usbc0";
 	usb_port_type = <0x2>;
-	usb_detect_type = <0x1>;
+	usb_detect_type = <0x2>;
 	usb_detect_mode = <0x0>;
-	usb_id_gpio = <&r_pio PL 10 GPIO_ACTIVE_HIGH>;
-	enable-active-high;
-	usb_det_vbus_gpio = <&r_pio PM 5 GPIO_ACTIVE_HIGH>;
-	enable-active-high;
-	detvbus_io-supply = <&reg_bldo1>;
+	usb_id_gpio;
+	usb_det_vbus_gpio = "axp_ctrl";
+	det_vbus_supply = <&usb_power_supply>;
 	usb_regulator_io = "nocare";
-	usb_wakeup_suspend = <0>;
+	usb_wakeup_suspend = <1>;
 	usb_luns = <3>;
 	usb_serial_unique = <0>;
 	usb_serial_number = "20080411";
 	rndis_wceis = <1>;
+	wakeup-source;
 	status = "okay";
 };
 
@@ -2567,20 +2567,12 @@
 	status = "okay";
 };
 
-&usbc2 {
-	device_type = "usbc2";
-	drvvbus-supply = <&reg_usb1_vbus>;
-	status = "okay";
-};
-
-&xhci2 {
-	dr_mode = "host";
-	status = "okay";
-};
-
-&u2phy {
-	status = "okay";
-};
+/*
+ * clk-freq-24M : use Internal 24M reference clock
+ * clk-freq-100M: use Internal 100M reference clock
+ *
+ * Pick one of two.
+ */
 
 &combophy {
 	clk-freq-100M;
