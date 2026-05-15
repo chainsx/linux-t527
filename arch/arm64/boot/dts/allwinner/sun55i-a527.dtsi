@@ -70,7 +70,6 @@
 		edp0 = &edp0;
 		nsi0 = &nsi0;
 		npu = &npu;
-		rtc1= &rtc;/*internal rtc node=rtc1,embfly*/
 	};
 
 	reg_vdd_sys: vdd-sys {
@@ -89,6 +88,42 @@
 
 		bl31 {
 			reg = <0x0 0x48000000 0x0 0x01000000>;
+		};
+
+		riscvsram0_reserved: riscvsram0@7280000 {
+			reg = <0x0 0x07280000 0x0 0x40000>;
+			no-map;
+		};
+
+		riscvsram1_reserved: riscvsram1@72c0000 {
+			reg = <0x0 0x072c0000 0x0 0x40000>;
+			no-map;
+		};
+
+		e906_mem_fw: e906_mem_fw@5F000000 {
+			/* boot0 & uboot0 load elf addr */
+			reg = <0x0 0x5F000000 0x0 0x00a00000>;
+		};
+
+		e906_dram_reserved: e906_dram@60000000 {
+			reg = <0x0 0x60000000 0x0 0x00a00000>;
+			no-map;
+		};
+
+		rv_vdev0buffer: vdev0buffer@4ae00000 {
+			compatible = "shared-dma-pool";
+			reg = <0x0 0x4ae00000 0x0 0x40000>;
+			no-map;
+		};
+
+		rv_vdev0vring0: vdev0vring0@4ae40000 {
+			reg = <0x0 0x4ae40000 0x0 0x2000>;
+			no-map;
+		};
+
+		rv_vdev0vring1: vdev0vring1@4ae42000 {
+			reg = <0x0 0x4ae42000 0x0 0x2000>;
+			no-map;
 		};
 	};
 
@@ -1427,6 +1462,8 @@
 		sunxi_drm: sunxi-drm {
 			compatible = "allwinner,sunxi-drm";
 			fb_base = <0>;
+			quirk-prefer-fhd;
+			quirk-prefer-large-60;
 			status = "okay";
 		};
 
@@ -1662,6 +1699,8 @@
 
 		lvds0: lvds0@0001000 {
 			compatible = "allwinner,lvds0";
+			clocks = <&dsi0combophy CLK_LVDS_OR_RGB>;
+			clock-names = "lvds_pclk";
 			resets = <&ccu RST_BUS_LVDS0>;
 			reset-names = "rst_bus_lvds";
 			phys = <&dsi0combophy>, <&dsi1combophy>;
@@ -2674,7 +2713,7 @@
 			#thermal-sensor-cells = <1>;
 		};
 
-		ths1: ths0@2009400 {
+		ths1: ths1@2009400 {
 			compatible = "allwinner,sun55iw3p1-ths1";
 			reg = <0x0 0x02009400 0x0 0x400>;
 			clocks = <&ccu CLK_THS>, <&ccu CLK_GPADC1_24M>;
@@ -5078,6 +5117,11 @@
 			interrupt-names = "msi", "sii", "edma-w0", "edma-w1", "edma-w2", "edma-w3",
 					  "edma-r0", "edma-r1", "edma-r2", "edma-r3";
 			#interrupt-cells = <1>;
+			interrupt-map-mask = <0 0 0 7>;
+			interrupt-map = <0 0 0 1 &pcie_intc 0>,
+							<0 0 0 2 &pcie_intc 1>,
+							<0 0 0 3 &pcie_intc 2>,
+							<0 0 0 4 &pcie_intc 3>;
 			num-edma = <4>;
 			max-link-speed = <2>;
 			num-ib-windows = <8>;
@@ -5087,6 +5131,12 @@
 			clocks = <&dcxo24M>, <&ccu CLK_PCIE_AUX>;
 			clock-names = "hosc", "pclk_aux";
 			status = "disabled";
+
+			pcie_intc: legacy-interrupt-controller {
+				interrupt-controller;
+				#address-cells = <0>;
+				#interrupt-cells = <1>;
+			};
 		};
 
 		/* audio dirver module -> audio codec */
