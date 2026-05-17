@@ -3658,3 +3658,63 @@ status = "okay";
 		};
 	};
 };
+
+&sdc0 {
+	status = "okay";
+
+	max-frequency = <50000000>;
+	no-1-8-v;
+	sunxi-dis-signal-vol-sw;
+
+	/delete-property/ sd-uhs-sdr12;
+	/delete-property/ sd-uhs-sdr25;
+	/delete-property/ sd-uhs-sdr50;
+	/delete-property/ sd-uhs-ddr50;
+	/delete-property/ sd-uhs-sdr104;
+};
+
+/* 4021000.sdmmc / sdc1:
+ * Disable it first unless your board actually uses SDIO Wi-Fi on PG0-PG5.
+ * Your log shows this controller probes with missing regulators and then
+ * participates in the failing voltage-switch path.
+ */
+ 
+ &sdc1 {
+	status = "okay";
+
+	bus-width = <4>;
+	non-removable;
+	no-sd;
+	no-mmc;
+
+	cap-sd-highspeed;
+	cap-sdio-irq;
+	keep-power-in-suspend;
+	ignore-pm-notify;
+
+	max-frequency = <50000000>;
+	no-1-8-v;
+	sunxi-dis-signal-vol-sw;
+
+	/delete-property/ sd-uhs-sdr12;
+	/delete-property/ sd-uhs-sdr25;
+	/delete-property/ sd-uhs-sdr50;
+	/delete-property/ sd-uhs-ddr50;
+	/delete-property/ sd-uhs-sdr104;
+};
+
+&lvds0 {
+	status = "disabled";
+};
+
+&dlcd0 {
+	status = "disabled";
+};
+
+&lvds_panel {
+	status = "disabled";
+};
+
+&lvds_backlight {
+	status = "disabled";
+};
