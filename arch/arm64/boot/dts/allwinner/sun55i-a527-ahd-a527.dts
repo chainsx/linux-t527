@@ -14,6 +14,7 @@
 /{
 	board = "A527", "A527-DEMO-AXP717B";
 	compatible = "allwinner,t527", "arm,sun55iw3p1";
+	model = "AHD-A527 HDMI";
 
 	aliases {
 		pmu0 = &pmu0;
@@ -29,6 +30,11 @@
 		standby-param = &standby_param;
 		arisc-config = &arisc_config;
 		cir_param = &cir_param;
+		ethernet0 = &gmac0;
+		ethernet1 = &gmac1;
+		mmc0 = &sdc0;
+		mmc1 = &sdc1;
+		mmc2 = &sdc2;
 	};
 
 	reg_usb0_vbus: usb0-vbus {
@@ -3661,36 +3667,6 @@ status = "okay";
 
 &sdc0 {
 	status = "okay";
-
-	max-frequency = <50000000>;
-	no-1-8-v;
-	sunxi-dis-signal-vol-sw;
-
-	/delete-property/ sd-uhs-sdr12;
-	/delete-property/ sd-uhs-sdr25;
-	/delete-property/ sd-uhs-sdr50;
-	/delete-property/ sd-uhs-ddr50;
-	/delete-property/ sd-uhs-sdr104;
-};
-
-/* 4021000.sdmmc / sdc1:
- * Disable it first unless your board actually uses SDIO Wi-Fi on PG0-PG5.
- * Your log shows this controller probes with missing regulators and then
- * participates in the failing voltage-switch path.
- */
- 
- &sdc1 {
-	status = "okay";
-
-	bus-width = <4>;
-	non-removable;
-	no-sd;
-	no-mmc;
-
-	cap-sd-highspeed;
-	cap-sdio-irq;
-	keep-power-in-suspend;
-	ignore-pm-notify;
 
 	max-frequency = <50000000>;
 	no-1-8-v;
