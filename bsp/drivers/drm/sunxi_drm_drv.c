@@ -38,7 +38,8 @@
 #include "sunxi_drm_gem.h"
 #include "sunxi_drm_debug.h"
 
-#define DRIVER_NAME "sunxi-drm"
+//#define DRIVER_NAME "sunxi-drm"
+#define DRIVER_NAME "sun4i-drm"
 #define DRIVER_DESC "allwinnertech SoC DRM"
 #define DRIVER_DATE "20230901"
 #define DRIVER_MAJOR 3
