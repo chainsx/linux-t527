@@ -13,6 +13,7 @@
 #include <sunxi-log.h>
 #include <linux/io.h>
 #include <linux/iopoll.h>
+#include <linux/etherdevice.h>
 #include <linux/mdio-mux.h>
 #include <linux/mfd/syscon.h>
 #include <linux/module.h>
@@ -38,8 +39,11 @@
 #define MAC_IRQ_NAME			8
 
 static char mac_str[MAC_ADDR_LEN] = SUNXI_DWMAC_MAC_ADDRESS;
+static char mac_str1[MAC_ADDR_LEN] = SUNXI_DWMAC_MAC_ADDRESS;
 module_param_string(mac_str, mac_str, MAC_ADDR_LEN, S_IRUGO | S_IWUSR);
+module_param_string(mac_str1, mac_str1, MAC_ADDR_LEN, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(mac_str, "MAC Address String.(xx:xx:xx:xx:xx:xx)");
+MODULE_PARM_DESC(mac_str1, "MAC Address String for ethernet1.(xx:xx:xx:xx:xx:xx)");
 
 #ifdef MODULE
 extern int get_custom_mac_address(int fmt, char *name, char *addr);
@@ -579,13 +583,100 @@ static int sunxi_dwmac_resource_get(struct platform_device *pdev, struct sunxi_d
 }
 
 #ifndef MODULE
-static void sunxi_dwmac_set_mac(u8 *dst, u8 *src)
+static bool sunxi_dwmac_is_empty_mac_str(const char *str)
 {
-	int i;
-	char *p = src;
+	return !str || !strlen(str) ||
+	       !strcmp(str, SUNXI_DWMAC_MAC_ADDRESS);
+}
 
-	for (i = 0; i < ETH_ALEN; i++, p++)
-		dst[i] = simple_strtoul(p, &p, 16);
+static int sunxi_dwmac_parse_mac(const char *str, u8 *mac)
+{
+	if (sunxi_dwmac_is_empty_mac_str(str))
+		return -ENOENT;
+
+	if (!mac_pton(str, mac))
+		return -EINVAL;
+
+	if (!is_valid_ether_addr(mac))
+		return -EINVAL;
+
+	return 0;
+}
+
+static const char *
+sunxi_dwmac_get_cmdline_mac_str(struct plat_stmmacenet_data *plat_dat)
+{
+	const char *str;
+
+	/*
+	 * plat_dat->bus_id is parsed from device-tree aliases:
+	 *
+	 *   aliases {
+	 *           ethernet0 = &gmac0;
+	 *           ethernet1 = &gmac1;
+	 *   };
+	 *
+	 * Without aliases, stmmac_probe_config_dt() falls back to bus_id 0,
+	 * so both ports would select mac_addr/addr_eth.
+	 */
+	if (plat_dat && plat_dat->bus_id == 1)
+		str = mac_str1;
+	else
+		str = mac_str;
+
+	if (sunxi_dwmac_is_empty_mac_str(str))
+		return NULL;
+
+	return str;
+}
+
+static const char *
+sunxi_dwmac_get_addr_mgt_prop(struct plat_stmmacenet_data *plat_dat)
+{
+	if (plat_dat && plat_dat->bus_id == 1)
+		return "addr_eth1";
+
+	return "addr_eth";
+}
+
+static int sunxi_dwmac_get_fixed_mac(struct device *dev,
+				     struct plat_stmmacenet_data *plat_dat,
+				     u8 *mac)
+{
+	struct device_node *np;
+	const char *str;
+	const char *prop;
+	int ret;
+
+	/* Priority 1: kernel command line mac_addr/mac_addr1. */
+	str = sunxi_dwmac_get_cmdline_mac_str(plat_dat);
+	ret = sunxi_dwmac_parse_mac(str, mac);
+	if (!ret)
+		return 0;
+
+	if (str)
+		sunxi_warn(dev, "Invalid cmdline MAC address: %s\n", str);
+
+	/* Priority 2: U-Boot fixed-up /soc/addr_mgt/addr_eth*. */
+	prop = sunxi_dwmac_get_addr_mgt_prop(plat_dat);
+	np = of_find_node_by_path("/soc/addr_mgt");
+	if (!np)
+		return -ENOENT;
+
+	ret = of_property_read_string(np, prop, &str);
+	of_node_put(np);
+	if (ret)
+		return ret;
+
+	ret = sunxi_dwmac_parse_mac(str, mac);
+	if (ret) {
+		if (!sunxi_dwmac_is_empty_mac_str(str))
+			sunxi_warn(dev, "Invalid /soc/addr_mgt/%s MAC address: %s\n",
+				   prop, str);
+		return ret;
+	}
+
+	return 0;
 }
 #endif
 
@@ -598,6 +689,9 @@ static int sunxi_dwmac_probe(struct platform_device *pdev)
 	int ret;
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 12, 0))
 	char *mac_temp = NULL;
+#endif
+#ifndef MODULE
+	u8 fixed_mac[ETH_ALEN];
 #endif
 
 	ret = stmmac_get_platform_resources(pdev, &stmmac_res);
@@ -625,6 +719,8 @@ static int sunxi_dwmac_probe(struct platform_device *pdev)
 	plat_dat = stmmac_probe_config_dt(pdev, &stmmac_res.mac);
 	if (IS_ERR_OR_NULL(stmmac_res.mac)) {
 		mac_temp = devm_kzalloc(dev, ETH_ALEN, GFP_KERNEL);
+		if (!mac_temp)
+			return -ENOMEM;
 		stmmac_res.mac = mac_temp;
 	}
 #endif
@@ -639,16 +735,33 @@ static int sunxi_dwmac_probe(struct platform_device *pdev)
 #ifdef MODULE
 	get_custom_mac_address(1, "eth", stmmac_res.mac);
 #else
-	sunxi_dwmac_set_mac(stmmac_res.mac, mac_str);
+	if (!sunxi_dwmac_get_fixed_mac(dev, plat_dat, stmmac_res.mac))
+		sunxi_info(dev, "Use fixed MAC address %pM\n", stmmac_res.mac);
 #endif
 #else
-	if (mac_temp) {
+
 #ifdef MODULE
+	if (mac_temp) {
 		get_custom_mac_address(1, "eth", mac_temp);
 #else
-		sunxi_dwmac_set_mac(mac_temp, mac_str);
-#endif
+	ret = sunxi_dwmac_get_fixed_mac(dev, plat_dat, fixed_mac);
+	if (!ret) {
+		/*
+		 * In this 5.10 vendor tree stmmac_res.mac is const char *.
+		 * Allocate a writable ETH_ALEN buffer before overriding the
+		 * MAC supplied by DT/stmmac_probe_config_dt().
+		 */
+		if (!mac_temp) {
+			mac_temp = devm_kzalloc(dev, ETH_ALEN, GFP_KERNEL);
+			if (!mac_temp)
+				return -ENOMEM;
+			stmmac_res.mac = mac_temp;
+		}
+
+		ether_addr_copy(mac_temp, fixed_mac);
+		sunxi_info(dev, "Use fixed MAC address %pM\n", fixed_mac);
 	}
+#endif
 #endif
 
 	plat_dat->bsp_priv = chip;
@@ -875,14 +988,22 @@ module_platform_driver(sunxi_dwmac_driver);
 #ifndef MODULE
 static int __init sunxi_dwmac_set_mac_addr(char *str)
 {
-	char *p = str;
-
 	if (str && strlen(str))
-		memcpy(mac_str, p, MAC_ADDR_LEN);
+		strscpy(mac_str, str, sizeof(mac_str));
 
 	return 0;
 }
 __setup("mac1_addr=", sunxi_dwmac_set_mac_addr);
+
+static int __init sunxi_dwmac_set_mac_addr1(char *str)
+{
+	if (str && strlen(str))
+		strscpy(mac_str1, str, sizeof(mac_str1));
+
+	return 0;
+}
+__setup("mac_addr1=", sunxi_dwmac_set_mac_addr1);
+
 #endif /* MODULE */
 
 MODULE_DESCRIPTION("Allwinner DWMAC driver");
