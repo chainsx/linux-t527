@@ -148,7 +148,7 @@ int log_print_threshold = 0;
  * dhd_msg_level and dhd_log_level have the same level
  */
 #ifdef DHD_DEBUGABILITY_LOG_DUMP_RING
-int dhd_msg_level = DHD_ERROR_VAL | DHD_EVENT_VAL
+int dhd_msg_level = DHD_ERROR_VAL
 #ifdef BOARD_HIKEY
 		| DHD_FWLOG_VAL
 #endif /* BOARD_HIKEY */
@@ -5179,8 +5179,13 @@ wl_show_host_event(dhd_pub_t *dhd_pub, wl_event_msg_t *event, void *event_data,
 			/* Because WLC_E_ESCAN_RESULT event log are being print too many.
 			* So, DHD_EVENT() changes to be used DHD_TRACE() in HW4 platform.
 			*/
-			DHD_EVENT(("MACEVENT: %s %d, MAC %s, status %d \n",
-				event_name, event_type, eabuf, (int)status));
+			if (status == WLC_E_STATUS_PARTIAL) {
+				DHD_TRACE(("MACEVENT: %s %d, MAC %s, status %d\n",
+					event_name, event_type, eabuf, (int)status));
+			} else {
+				DHD_EVENT(("MACEVENT: %s %d, MAC %s, status %d\n",
+					event_name, event_type, eabuf, (int)status));
+			}
 #ifdef REPORT_FATAL_TIMEOUTS
 			/* a 'partial' status means the escan is still in progress
 			* any other status implies the escan has either finished or aborted
