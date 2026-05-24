@@ -211,8 +211,69 @@ const static struct afbc_stream_info afbc_stream_infos[] = {
 	{ DRM_FORMAT_NV12,     1, {8, 8, 8, 0}, {1, 5} },
 	{ DRM_FORMAT_NV21,     1, {8, 8, 8, 0}, {1, 5} },
 
+	
+	/*
+	 * 10-bit RGB AFBC formats.
+	 * Mutter/Wayland may allocate AR30, i.e. DRM_FORMAT_ARGB2101010,
+	 * when the plane advertises SUNXI_RGB_AFBC_MOD.  The original table
+	 * only listed ABGR2101010, while the later fbd_fmt_seq switch already
+	 * contains ARGB2101010/RGBA1010102/BGRA1010102.  Keep the table and
+	 * the register programming path consistent so fill_afbc_info() never
+	 * falls back to the invalid 8-bit default for these formats.
+	 */
+	{ DRM_FORMAT_ARGB2101010, 0, {10, 10, 10, 2}, {0, 3} },
 	{ DRM_FORMAT_ABGR2101010, 0, {10, 10, 10, 2}, {0, 3} },
+	{ DRM_FORMAT_RGBA1010102, 0, {10, 10, 10, 2}, {0, 3} },
+	{ DRM_FORMAT_BGRA1010102, 0, {10, 10, 10, 2}, {0, 3} },
+
 };
+
+static const struct afbc_stream_info *de_afbc_stream_info_get(u32 format)
+{
+	size_t i;
+
+	for (i = 0; i < ARRAY_SIZE(afbc_stream_infos); i++) {
+		if (afbc_stream_infos[i].format == format)
+			return &afbc_stream_infos[i];
+	}
+
+	return NULL;
+}
+
+static bool de_afbc_format_is_yuv(u32 format)
+{
+	switch (format) {
+	case DRM_FORMAT_YUV422:
+	case DRM_FORMAT_NV61:
+	case DRM_FORMAT_NV16:
+	case DRM_FORMAT_YUV420:
+	case DRM_FORMAT_YVU420:
+	case DRM_FORMAT_NV12:
+	case DRM_FORMAT_NV21:
+		return true;
+	default:
+		return false;
+	}
+}
+
+static bool de_afbc_stream_supports_modifier(const struct afbc_stream_info *info, u64 modifier)
+{
+	bool yuv = de_afbc_format_is_yuv(info->format);
+
+	/* RGB/RGBA stream: 32x8, sparse, YTR, split. */
+	if (modifier == SUNXI_RGB_AFBC_MOD)
+		return !yuv && info->header_layout == 0 &&
+		       info->superblock_layout[1] == 3;
+
+	/* YUV 4:2:0 / 4:2:2 stream: 16x16, sparse, split, no YTR. */
+	if (modifier == SUNXI_YUV_AFBC_MOD)
+		return yuv &&
+		       (info->header_layout == 1 || info->header_layout == 2) &&
+		       info->superblock_layout[0] == info->header_layout;
+
+	return false;
+}
+
 
 static const uint64_t format_modifiers_afbc[] = {
 	SUNXI_YUV_AFBC_MOD,
@@ -340,14 +401,18 @@ static void fbd_atw_set_block_dirty(struct de_fbd_atw_private *priv,
 
 bool de_afbc_format_mod_supported(struct de_afbd_handle *hdl, u32 format, u64 modifier)
 {
+	const struct afbc_stream_info *info;
+
+	(void)hdl;
+
 	if (modifier == DRM_FORMAT_MOD_INVALID)
 		return false;
 
-	// TODO: filter out the formats which not support AFBC
-	if (modifier == SUNXI_RGB_AFBC_MOD || modifier == SUNXI_YUV_AFBC_MOD)
-		return true;
+	info = de_afbc_stream_info_get(format);
+	if (!info)
+		return false;
 
-    return false;
+	return de_afbc_stream_supports_modifier(info, modifier);
 }
 
 static void de_fbd_get_rotate_info(struct de_fbd_info *info, const unsigned int rotation, u32 format)
