@@ -1341,6 +1341,7 @@ status = "okay";
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&s_irrx_pins_default>;
 	pinctrl-1 = <&s_irrx_pins_sleep>;
+	ir_protocol_used = <0>;
 	status = "okay";/*fixed,embfly*/
 };
 
@@ -2793,7 +2794,7 @@ status = "okay";
 	gt9xx {
 		compatible = "goodix,gt9xx";
 		reg = <0x5d>;
-		status = "okay";
+		status = "disabled";
 		irq-gpios = <&r_pio PL 7 GPIO_ACTIVE_LOW>; /*ctp int */
 //		goodix_irq_gpio = <&pio PD 20 GPIO_ACTIVE_LOW>; /* ubuntu config */
 		irq-flags = <2>;
@@ -3274,6 +3275,8 @@ status = "okay";
 };
 
 &codec_mach {
+	soundcard-mach,widgets = "Microphone", "HS MIC Jack",
+				 "Headphone", "HP Jack";
 	soundcard-mach,jack-support = <1>;
 	status = "okay";
 	soundcard-mach,cpu {
@@ -3281,6 +3284,7 @@ status = "okay";
 	};
 	soundcard-mach,codec {
 		sound-dai = <&codec>;
+		soundcard-mach,pll-fs	= <1>;
 	};
 };
 
