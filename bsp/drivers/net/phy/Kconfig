@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# PHY Layer Configuration
+#
+
+menu "PHY"
+        depends on PHYLIB
+
+source "bsp/drivers/net/phy/jlsemi/Kconfig"
+
+endmenu

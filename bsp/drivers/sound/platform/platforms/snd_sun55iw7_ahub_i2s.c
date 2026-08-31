@@ -1,0 +1,164 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/* Copyright(c) 2020 - 2025 Allwinner Technology Co.,Ltd. All rights reserved. */
+/*
+ * Allwinner's ALSA SoC Audio driver
+ *
+ * Copyright (c) 2025, wuhao <wuhao@allwinnertech.com>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ */
+
+#include <linux/platform_device.h>
+#include <linux/slab.h>
+#include <linux/of.h>
+#include <linux/clk.h>
+#include <linux/reset.h>
+#include <linux/device.h>
+#include <linux/regmap.h>
+
+#include "snd_sunxi_log.h"
+#include "snd_sunxi_ahub_i2s.h"
+
+struct sunxi_ahub_i2s_clk {
+
+	struct clk *clk_pll_audio0;
+	struct clk *clk_pll_peri1_600m;
+
+	/* module clk */
+	struct clk *clk_i2s;
+};
+
+void *snd_ahub_i2s_clk_init(struct platform_device *pdev)
+{
+	int ret = 0;
+	struct device_node *np = pdev->dev.of_node;
+	struct sunxi_ahub_i2s_clk *clk = NULL;
+
+	SND_LOG_DEBUG("\n");
+
+	clk = kzalloc(sizeof(*clk), GFP_KERNEL);
+	if (!clk) {
+		SND_LOG_ERR_STD(E_I2S_SWDEP_CLK_INIT, "can't allocate sunxi_ahub_i2s_clk memory\n");
+		return NULL;
+	}
+
+	/* get parent clk */
+	clk->clk_pll_audio0 = of_clk_get_by_name(np, "clk_pll_audio0");
+	if (IS_ERR_OR_NULL(clk->clk_pll_audio0)) {
+		SND_LOG_ERR_STD(E_I2S_SWDEP_CLK_INIT, "clk_pll_audio0 get failed\n");
+		ret = PTR_ERR(clk->clk_pll_audio0);
+		goto err_get_clk_pll_audio0;
+	}
+	clk->clk_pll_peri1_600m = of_clk_get_by_name(np, "clk_pll_peri1_600m");
+	if (IS_ERR_OR_NULL(clk->clk_pll_peri1_600m)) {
+		SND_LOG_ERR_STD(E_I2S_SWDEP_CLK_INIT, "clk_pll_peri1_600m get failed\n");
+		ret = PTR_ERR(clk->clk_pll_peri1_600m);
+		goto err_get_clk_pll_peri1_600m;
+	}
+
+	/* get i2s clk */
+	clk->clk_i2s = of_clk_get_by_name(np, "clk_i2s");
+	if (IS_ERR_OR_NULL(clk->clk_i2s)) {
+		SND_LOG_ERR_STD(E_I2S_SWDEP_CLK_INIT, "clk i2s get failed\n");
+		ret = PTR_ERR(clk->clk_i2s);
+		goto err_get_clk_i2s;
+	}
+
+	return clk;
+
+err_get_clk_i2s:
+	clk_put(clk->clk_pll_peri1_600m);
+err_get_clk_pll_peri1_600m:
+	clk_put(clk->clk_pll_audio0);
+err_get_clk_pll_audio0:
+	kfree(clk);
+	return NULL;
+}
+
+void snd_ahub_i2s_clk_exit(void *clk_orig)
+{
+	struct sunxi_ahub_i2s_clk *clk = (void *)clk_orig;
+
+	SND_LOG_DEBUG("\n");
+
+	clk_put(clk->clk_i2s);
+	clk_put(clk->clk_pll_audio0);
+	clk_put(clk->clk_pll_peri1_600m);
+
+	kfree(clk);
+}
+
+int snd_ahub_i2s_clk_enable(void *clk_orig)
+{
+	int ret = 0;
+	struct sunxi_ahub_i2s_clk *clk = (struct sunxi_ahub_i2s_clk *)clk_orig;
+
+	SND_LOG_DEBUG("\n");
+
+	if (clk_prepare_enable(clk->clk_pll_audio0)) {
+		SND_LOG_ERR_STD(E_I2S_SWDEP_CLK_EN, "clk_pll_audio0 enable failed\n");
+		ret = -EINVAL;
+		goto err_enable_clk_pll_audio0;
+	}
+	if (clk_prepare_enable(clk->clk_pll_peri1_600m)) {
+		SND_LOG_ERR_STD(E_I2S_SWDEP_CLK_EN, "clk_pll_peri1_600m enable failed\n");
+		ret = -EINVAL;
+		goto err_enable_clk_pll_peri1_600m;
+	}
+
+	if (clk_prepare_enable(clk->clk_i2s)) {
+		SND_LOG_ERR_STD(E_I2S_SWDEP_CLK_EN, "clk_i2s enable failed\n");
+		ret = -EINVAL;
+		goto err_enable_clk_i2s;
+	}
+
+	return 0;
+
+err_enable_clk_i2s:
+	clk_disable_unprepare(clk->clk_pll_peri1_600m);
+err_enable_clk_pll_peri1_600m:
+	clk_disable_unprepare(clk->clk_pll_audio0);
+err_enable_clk_pll_audio0:
+
+	return ret;
+}
+
+void snd_ahub_i2s_clk_disable(void *clk_orig)
+{
+	struct sunxi_ahub_i2s_clk *clk = (struct sunxi_ahub_i2s_clk *)clk_orig;
+
+	SND_LOG_DEBUG("\n");
+
+	clk_disable_unprepare(clk->clk_i2s);
+	clk_disable_unprepare(clk->clk_pll_audio0);
+	clk_disable_unprepare(clk->clk_pll_peri1_600m);
+}
+
+int snd_ahub_i2s_clk_rate(void *clk_orig, unsigned int freq_in, unsigned int freq_out)
+{
+	struct sunxi_ahub_i2s_clk *clk = (struct sunxi_ahub_i2s_clk *)clk_orig;
+
+	SND_LOG_DEBUG("\n");
+
+	if (freq_in % 24576000 == 0) {
+		if (clk_set_parent(clk->clk_i2s, clk->clk_pll_peri1_600m)) {
+			SND_LOG_ERR_STD(E_I2S_SWDEP_CLK_SET, "set i2s parent clk failed\n");
+			return -EINVAL;
+		}
+	} else {
+		if (clk_set_parent(clk->clk_i2s, clk->clk_pll_audio0)) {
+			SND_LOG_ERR_STD(E_I2S_SWDEP_CLK_SET, "set i2s parent clk failed\n");
+			return -EINVAL;
+		}
+	}
+
+	if (clk_set_rate(clk->clk_i2s, freq_out)) {
+		SND_LOG_ERR_STD(E_I2S_SWDEP_CLK_SET, "freq : %u module clk unsupport\n", freq_out);
+		return -EINVAL;
+	}
+
+	return 0;
+}

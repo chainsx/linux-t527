@@ -1,0 +1,106 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# Allwinner audio codecs driver Kconfig
+#
+# Copyright(c) 2022-2027 Allwinnertech Co., Ltd.
+
+menu "CODEC drivers"
+
+# HDMIAUDIO
+config SND_SOC_SUNXI_CODEC_HDMI
+	tristate "Allwinner HDMIAUDIO support"
+	depends on ARCH_SUN55IW3 \
+		|| ARCH_SUN8IW11 \
+		|| ARCH_SUN8IW20  \
+		|| ARCH_SUN20IW1  \
+		|| ARCH_SUN50IW9  \
+		|| ARCH_SUN55IW7  \
+		|| ARCH_SUN65IW1 \
+		|| ARCH_SUN60IW2
+	help
+	  Select Y or M to support hdmi audio in Allwinner SoCs.
+
+# HDMI2 AUDIO
+config SND_SOC_SUNXI_CODEC_HDMI_2
+	tristate "Allwinner NEW HDMIAUDIO support"
+	depends on ARCH_SUN60IW2
+	help
+	  Select Y or M to support hdmi audio in Allwinner SoCs.
+
+# EDPAUDIO
+config SND_SOC_SUNXI_CODEC_EDP
+	tristate "Allwinner EDPAUDIO support"
+	depends on ARCH_SUN55IW3 \
+		|| ARCH_SUN65IW1
+	help
+	  Select Y or M to support edp audio in Allwinner SoCs.
+
+# AVAUDIO
+config SND_SOC_SUNXI_CODEC_AV
+	tristate "Allwinner AVAUDIO support"
+	depends on ARCH_SUN60IW2 \
+		|| ARCH_SUN65IW1
+	help
+	  Select Y or M to support av audio in Allwinner SoCs.
+
+config SND_SOC_AC101
+	tristate "Allwinner AC101 CODEC"
+	depends on I2C
+	default n
+	help
+	  Enable support for the Allwinner AC101 CODEC.
+	  The device provides a I2S/TDM/PDM interface for audio data
+	  and a standard I2C interface for control data communication.
+	  Select this if your sound card has AC101.
+
+config SND_SOC_AC101B
+	tristate "Allwinner AC101B CODEC"
+	depends on I2C
+	default n
+	help
+	  Enable support for the Allwinner AC101B CODEC.
+	  The device provides a I2S/TDM/PDM interface for audio data
+	  and a standard I2C interface for control data communication.
+	  Select this if your sound card has AC101B.
+
+config SND_SOC_AC107
+	tristate "Allwinner AC107 CODEC"
+	depends on I2C
+	default n
+	help
+	  Enable support for the Allwinner AC107 CODEC.
+	  The device provides a I2S/TDM/PDM interface for audio data
+	  and a standard I2C interface for control data communication.
+	  Select this if your sound card has AC107.
+
+config SND_SOC_AC108
+	tristate "Allwinner AC108 CODEC"
+	depends on I2C
+	default n
+	help
+	  Enable support for the Allwinner AC108 CODEC.
+	  The device provides a I2S/TDM/PDM interface for audio data
+	  and a standard I2C interface for control data communication.
+	  Select this if your sound card has AC108.
+
+config SND_SOC_FS16XX
+	tristate "SoC Audio for FourSemi FS1894SU PA"
+	depends on I2C
+	default n
+	help
+	  This option enables support for FourSemi PA.
+	  The device supports a I2S interface for audio data
+	  and a standard I2C interface for control data communication.
+	  Select this if your sound card has FourSemi FS1894SU PA.
+
+config SND_SOC_ES8323
+	tristate "ES8323"
+	depends on I2C
+	default n
+	help
+	  Enable support for the es8323.
+	  The device provides a I2S/TDM/PDM interface for audio data
+	  and a standard I2C interface for control data communication.
+	  Select this if your sound card has es8323.
+
+endmenu

@@ -1,0 +1,56 @@
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2026 The Allwinner BSP DDK Project
+
+load("//build/kernel/kleaf:kernel.bzl", "ddk_module", "ddk_headers")
+load("//devices/allwinner:rules.bzl", "ddk_install")
+
+ddk_headers(
+    name = "sound-headers",
+    hdrs = [
+        "common/snd_sunxi_common.h",
+        "common/snd_sunxi_common_utils.h",
+        "common/snd_sunxi_jack.h",
+        "common/snd_sunxi_log.h",
+        "common/snd_sunxi_pcm.h",
+        "common/snd_sunxi_rxsync.h",
+        "adapter/snd_sunxi_adapter.h",
+        "pa/snd_sunxi_pa.h",
+    ],
+    includes = [
+        "common",
+        "adapter",
+        "pa",
+    ],
+    visibility = [":__subpackages__"],
+)
+
+# @ALLWINNER_DDK_MODULE_MAP@snd_soc_sunxi_common@CONFIG_SND_SOC_SUNXI_COMMON=m
+ddk_module(
+    name = "snd_soc_sunxi_common",
+    srcs = [
+        "adapter/snd_sunxi_adapter.c",
+        "adapter/snd_sunxi_pcm_adapter.c",
+        "common/snd_sunxi_pcm.c",
+        "common/snd_sunxi_rxsync.c",
+        "common/snd_sunxi_jack_codec.c",
+        "common/snd_sunxi_jack_extcon.c",
+        "common/snd_sunxi_jack_gpio.c",
+        "common/snd_sunxi_jack_advance.c",
+        "common/snd_sunxi_jack.c",
+        "common/snd_sunxi_common_utils.c",
+        "common/snd_sunxi_common.c",
+    ],
+    out = "snd_soc_sunxi_common.ko",
+    defconfig = "//devices/allwinner:allwinner_defconfig.fragment",
+    kernel_build = "//devices/allwinner:allwinner_android",
+    deps = [
+        "//devices/allwinner/bsp:allwinner_bsp_headers",
+        ":sound-headers",
+    ],
+    visibility = ["//devices/allwinner:__subpackages__"],
+)
+
+ddk_install(
+    name = "snd_soc_sunxi_common_install",
+    ddk_module = ":snd_soc_sunxi_common",
+)

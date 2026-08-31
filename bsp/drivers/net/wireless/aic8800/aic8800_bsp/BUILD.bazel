@@ -1,0 +1,309 @@
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2026 The Allwinner BSP DDK Project
+
+load("//build/kernel/kleaf:kernel.bzl", "ddk_module", "ddk_headers")
+load("//devices/allwinner:rules.bzl", "ddk_install")
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag", "bool_flag")
+load("@bazel_skylib//lib:selects.bzl", "selects")
+
+bool_flag(
+    name = "CONFIG_SDIO_PWRCTRL",
+    build_setting_default = True,
+)
+
+bool_flag(
+    name = "CONFIG_PLATFORM_HI",
+    build_setting_default = True,
+)
+
+bool_flag(
+    name = "CONFIG_VRF_DCDC_MODE",
+    build_setting_default = True,
+)
+
+bool_flag(
+    name = "CONFIG_OOB",
+    build_setting_default = False,
+)
+
+bool_flag(
+    name = "CONFIG_DPD",
+    build_setting_default = True,
+)
+
+bool_flag(
+    name = "CONFIG_FORCE_DPD_CALIB",
+    build_setting_default = True,
+)
+
+bool_flag(
+    name = "CONFIG_AMSDU_RX",
+    build_setting_default = True,
+)
+
+bool_flag(
+    name = "CONFIG_PREALLOC_TXQ",
+    build_setting_default = True,
+)
+
+bool_flag(
+    name = "CONFIG_SDIO_F1_FLAG",
+    build_setting_default = True,
+)
+
+config_setting(
+    name = "config_sdio_pwrctrl",
+    flag_values = {":CONFIG_SDIO_PWRCTRL": "true"},
+)
+
+config_setting(
+    name = "config_platform_hi",
+    flag_values = {":CONFIG_PLATFORM_HI": "true"},
+)
+
+config_setting(
+    name = "config_vrf_dcdc_mode",
+    flag_values = {":CONFIG_VRF_DCDC_MODE": "true"},
+)
+
+config_setting(
+    name = "config_oob",
+    flag_values = {":CONFIG_OOB": "true"},
+)
+
+config_setting(
+    name = "config_dpd",
+    flag_values = {":CONFIG_DPD": "true"},
+)
+
+config_setting(
+    name = "config_force_dpd_calib",
+    flag_values = {":CONFIG_FORCE_DPD_CALIB": "true"},
+)
+
+config_setting(
+    name = "config_amsdu_rx",
+    flag_values = {":CONFIG_AMSDU_RX": "true"},
+)
+
+config_setting(
+    name = "config_prealloc_txq",
+    flag_values = {":CONFIG_PREALLOC_TXQ": "true"},
+)
+
+config_setting(
+    name = "config_sdio_f1_flag",
+    flag_values = {":CONFIG_SDIO_F1_FLAG": "true"},
+)
+
+selects.config_setting_group(
+    name = "config_platform_allwinner",
+    match_all = [
+        "//devices/allwinner/flags:drivers/net/wireless/aic8800/aic8800_bsp/flag_platform_allwinner_settings_true",
+    ],
+)
+
+selects.config_setting_group(
+    name = "config_aic_intf_sdio",
+    match_all = [
+        "//devices/allwinner/flags:drivers/net/wireless/aic8800/aic8800_bsp/flag_aic_intf_sdio_settings_true",
+    ],
+)
+
+selects.config_setting_group(
+    name = "config_aic_intf_usb",
+    match_all = [
+        "//devices/allwinner/flags:drivers/net/wireless/aic8800/aic8800_bsp/flag_aic_intf_usb_settings_true",
+    ],
+)
+
+selects.config_setting_group(
+    name = "config_usb_msg_ep",
+    match_all = [
+        "//devices/allwinner/flags:drivers/net/wireless/aic8800/aic8800_bsp/flag_usb_msg_ep_settings_true",
+    ],
+)
+
+selects.config_setting_group(
+    name = "flag_aic_intf_sdio",
+    match_all = [
+        ":config_aic_intf_sdio",
+    ],
+)
+
+selects.config_setting_group(
+    name = "flag_aic_intf_usb",
+    match_all = [
+        ":config_aic_intf_usb",
+    ],
+)
+
+selects.config_setting_group(
+    name = "flag_usb_msg_ep",
+    match_all = [
+        ":config_usb_msg_ep",
+    ],
+)
+
+selects.config_setting_group(
+    name = "flag_platform_allwinner",
+    match_all = [
+        ":config_platform_allwinner",
+    ],
+)
+
+selects.config_setting_group(
+    name = "flag_sdio_pwrctrl",
+    match_all = [
+        ":config_sdio_pwrctrl",
+        ":config_aic_intf_sdio",
+    ],
+)
+
+selects.config_setting_group(
+    name = "flag_platform_hi",
+    match_all = [
+        ":config_platform_hi",
+        ":config_aic_intf_usb",
+    ],
+)
+
+selects.config_setting_group(
+    name = "flag_vrf_dcdc_mode",
+    match_all = [
+        ":config_vrf_dcdc_mode",
+    ],
+)
+
+selects.config_setting_group(
+    name = "flag_oob",
+    match_all = [
+        ":config_oob",
+    ],
+)
+
+selects.config_setting_group(
+    name = "flag_dpd",
+    match_all = [
+        ":config_dpd",
+    ],
+)
+
+selects.config_setting_group(
+    name = "flag_force_dpd_calib",
+    match_all = [
+        ":config_force_dpd_calib",
+    ],
+)
+
+selects.config_setting_group(
+    name = "flag_amsdu_rx",
+    match_all = [
+        ":config_amsdu_rx",
+    ],
+)
+
+selects.config_setting_group(
+    name = "flag_prealloc_txq",
+    match_all = [
+        ":config_prealloc_txq",
+    ],
+)
+
+selects.config_setting_group(
+    name = "flag_sdio_f1_flag",
+    match_all = [
+        ":config_sdio_f1_flag",
+    ],
+)
+
+ddk_headers(
+    name = "aic8800_bsp-headers",
+    hdrs = glob([
+        "*.h",
+    ]),
+    includes = [
+        ".",
+    ],
+    visibility = ["//devices/allwinner:__subpackages__"],
+)
+
+ddk_module(
+    name = "aic8800_bsp",
+    srcs = [
+        "aic_bsp_main.c",
+        "aic_bsp_driver.c",
+        "aic_bsp_8800d.c",
+        "aic_bsp_8800dc.c",
+        "aic_bsp_8800d80.c",
+        "aic_bsp_txrxif.c",
+        "aic_bsp_verify.c",
+    ] + select({
+        ":flag_aic_intf_sdio":      ["aicsdio.c"],
+        "//conditions:default":     [],
+    }) + select({
+        ":flag_aic_intf_usb":       ["aicusb.c"],
+        "//conditions:default":     [],
+    }) + select({
+        ":flag_prealloc_txq":       ["aic_bsp_txq_prealloc.c"],
+        "//conditions:default":     [],
+    }),
+    out = "aic8800_bsp.ko",
+    copts = [
+        "-Wno-missing-prototypes",
+        "-Wno-missing-declarations",
+    ] + select({
+        ":flag_aic_intf_sdio":      ["-DAICWF_SDIO_SUPPORT"],
+        "//conditions:default":     [],
+    }) + select({
+        ":flag_aic_intf_usb":       ["-DAICWF_USB_SUPPORT"],
+        "//conditions:default":     [],
+    }) + select({
+        ":flag_usb_msg_ep":         ["-DCONFIG_USB_MSG_EP"],
+        "//conditions:default":     [],
+    }) + select({
+        ":flag_platform_allwinner": ["-DCONFIG_PLATFORM_ALLWINNER"],
+        "//conditions:default":     [],
+    }) + select({
+        ":flag_sdio_pwrctrl":       ["-DCONFIG_SDIO_PWRCTRL"],
+        "//conditions:default":     [],
+    }) + select({
+        ":flag_vrf_dcdc_mode":      ["-DCONFIG_VRF_DCDC_MODE"],
+        "//conditions:default":     [],
+    }) + select({
+        ":flag_oob":                ["-DCONFIG_OOB"],
+        "//conditions:default":     [],
+    }) + select({
+        ":flag_dpd":                ["-DDPD"],
+        "//conditions:default":     [],
+    }) + select({
+        ":flag_force_dpd_calib":    ["-DCONFIG_FORCE_DPD_CALIB", "-DCONFIG_DPD"],
+        "//conditions:default":     [],
+    }) + select({
+        ":flag_amsdu_rx":           ["-DCONFIG_AMSDU_RX"],
+        "//conditions:default":     [],
+    }) + select({
+        ":flag_prealloc_txq":       ["-DCONFIG_PREALLOC_TXQ"],
+        "//conditions:default":     [],
+    }) + select({
+        ":flag_sdio_f1_flag":       ["-DCONFIG_SDIO_F1_FLAG"],
+        "//conditions:default":     [],
+    }) + select({
+        ":flag_platform_hi":        ["-DCONFIG_PLATFORM_HI"],
+        "//conditions:default":     [],
+    }),
+    defconfig = "//devices/allwinner:allwinner_defconfig.fragment",
+    kernel_build = "//devices/allwinner:allwinner_android",
+    deps = [
+        "//devices/allwinner/bsp:allwinner_bsp_headers",
+        ":aic8800_bsp-headers",
+        "//devices/allwinner/bsp/drivers/misc/sunxi-rf:sunxi_rfkill",
+        "//devices/allwinner/bsp/drivers/mmc:sunxi_mmc_host",
+    ],
+    visibility = ["//devices/allwinner:__subpackages__"],
+)
+
+ddk_install(
+    name = "aic8800_bsp_install",
+    ddk_module = ":aic8800_bsp",
+)

@@ -1,0 +1,1 @@
+source "bsp/drivers/dma-buf/heaps/Kconfig"

@@ -1,0 +1,97 @@
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2026 The Allwinner BSP DDK Project
+
+load("//build/kernel/kleaf:kernel.bzl", "ddk_module", "ddk_headers")
+load("//devices/allwinner:rules.bzl", "ddk_install")
+
+# @ALLWINNER_DDK_MODULE_MAP@snd_soc_sunxi_codec_hdmi@CONFIG_SND_SOC_SUNXI_CODEC_HDMI=m
+ddk_module(
+    name = "snd_soc_sunxi_codec_hdmi",
+    srcs = [
+        "snd_sunxi_codec_hdmi.c",
+    ],
+    out = "snd_soc_sunxi_codec_hdmi.ko",
+    defconfig = "//devices/allwinner:allwinner_defconfig.fragment",
+    kernel_build = "//devices/allwinner:allwinner_android",
+    deps = [
+        "//devices/allwinner/bsp:allwinner_bsp_headers",
+        "//devices/allwinner/bsp/drivers/sound:sound-headers",
+        "//devices/allwinner/bsp/drivers/sound:snd_soc_sunxi_common",
+        "//devices/allwinner/bsp/drivers/drm:sunxidrm",
+    ],
+    visibility = ["//devices/allwinner:__subpackages__"],
+)
+
+ddk_install(
+    name = "snd_soc_sunxi_codec_hdmi_install",
+    ddk_module = ":snd_soc_sunxi_codec_hdmi",
+)
+
+# @ALLWINNER_DDK_MODULE_MAP@snd_soc_sunxi_codec_edp@CONFIG_SND_SOC_SUNXI_CODEC_EDP=m
+ddk_module(
+    name = "snd_soc_sunxi_codec_edp",
+    srcs = [
+        "snd_sunxi_codec_edp.c",
+    ],
+    out = "snd_soc_sunxi_codec_edp.ko",
+    defconfig = "//devices/allwinner:allwinner_defconfig.fragment",
+    kernel_build = "//devices/allwinner:allwinner_android",
+    deps = [
+        "//devices/allwinner/bsp:allwinner_bsp_headers",
+        "//devices/allwinner/bsp/drivers/sound:sound-headers",
+        "//devices/allwinner/bsp/drivers/sound:snd_soc_sunxi_common",
+        "//devices/allwinner/bsp/drivers/drm:sunxidrm",
+    ],
+    visibility = ["//devices/allwinner:__subpackages__"],
+)
+
+ddk_install(
+    name = "snd_soc_sunxi_codec_edp_install",
+    ddk_module = ":snd_soc_sunxi_codec_edp",
+)
+
+# @ALLWINNER_DDK_MODULE_MAP@snd_soc_sunxi_codec_av@CONFIG_SND_SOC_SUNXI_CODEC_AV=m
+ddk_module(
+    name = "snd_soc_sunxi_codec_av",
+    srcs = [
+        "snd_sunxi_codec_av.c",
+    ],
+    out = "snd_soc_sunxi_codec_av.ko",
+    defconfig = "//devices/allwinner:allwinner_defconfig.fragment",
+    kernel_build = "//devices/allwinner:allwinner_android",
+    deps = [
+        "//devices/allwinner/bsp:allwinner_bsp_headers",
+        "//devices/allwinner/bsp/drivers/sound:sound-headers",
+        "//devices/allwinner/bsp/drivers/sound:snd_soc_sunxi_common",
+        "//devices/allwinner/bsp/drivers/drm:sunxidrm",
+    ],
+    visibility = ["//devices/allwinner:__subpackages__"],
+)
+
+ddk_install(
+    name = "snd_soc_sunxi_codec_av_install",
+    ddk_module = ":snd_soc_sunxi_codec_av",
+)
+
+# @ALLWINNER_DDK_MODULE_MAP@snd-soc-ac107@CONFIG_SND_SOC_AC107=m
+ddk_module(
+    name = "snd-soc-ac107",
+    srcs = [
+        "ac107.c",
+        "ac107.h",
+    ],
+    out = "snd-soc-ac107.ko",
+    defconfig = "//devices/allwinner:allwinner_defconfig.fragment",
+    kernel_build = "//devices/allwinner:allwinner_android",
+    deps = [
+        "//devices/allwinner/bsp:allwinner_bsp_headers",
+        "//devices/allwinner/bsp/drivers/sound:sound-headers",
+        "//devices/allwinner/bsp/drivers/sound:snd_soc_sunxi_common",
+    ],
+    visibility = ["//devices/allwinner:__subpackages__"],
+)
+
+ddk_install(
+    name = "snd-soc-ac107_install",
+    ddk_module = ":snd-soc-ac107",
+)

@@ -1,0 +1,5 @@
+{
+  "modules": [
+    { "name": "aic8800_btusb", "conditions": [ "CONFIG_AIC8800_BTUSB_SUPPORT=m" ] }
+  ]
+}

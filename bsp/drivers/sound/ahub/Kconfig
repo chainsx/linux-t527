@@ -1,0 +1,80 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# Allwinner audio ahub driver Kconfig
+#
+# Copyright(c) 2022-2027 Allwinnertech Co., Ltd.
+
+# aaudio
+config SND_SOC_SUNXI_AHUB_AAUDIO
+	tristate
+
+# common
+config SND_SOC_SUNXI_AHUB_COMMON
+	tristate
+
+# ahub
+config SND_SOC_SUNXI_AHUB_MGMT
+	tristate
+
+# machine
+config SND_SOC_SUNXI_AHUB_MACH
+	tristate
+
+# menu select
+menu "AHUB drivers"
+
+# module
+config SND_SOC_SUNXI_AHUB_AC203C
+	tristate "Allwinner AHUB AC203C support"
+	select REGMAP_MMIO
+	select SND_SOC_GENERIC_DMAENGINE_PCM
+	select SND_SOC_SUNXI_AHUB_COMMON
+	select SND_SOC_SUNXI_AHUB_AAUDIO
+	select SND_SOC_SUNXI_AHUB_MGMT
+	select SND_SOC_SUNXI_AHUB_MACH
+	help
+	  Select Y or M to support AHUB AC203C Module in Allwinner SoCs.
+
+config SND_SOC_SUNXI_AHUB_I2S
+	tristate "Allwinner AHUB I2S support"
+	select REGMAP_MMIO
+	select SND_SOC_GENERIC_DMAENGINE_PCM
+	select SND_SOC_SUNXI_AHUB_COMMON
+	select SND_SOC_SUNXI_AHUB_MGMT
+	select SND_SOC_SUNXI_AHUB_MACH
+	help
+	  Select Y or M to support AHUB I2S Module in Allwinner SoCs.
+
+config SND_SOC_SUNXI_AHUB_OWA
+	tristate "Allwinner AHUB OWA support"
+	select REGMAP_MMIO
+	select SND_SOC_GENERIC_DMAENGINE_PCM
+	select SND_SOC_SUNXI_AHUB_COMMON
+	select SND_SOC_SUNXI_AHUB_MGMT
+	select SND_SOC_SUNXI_AHUB_MACH
+	help
+	  Select Y or M to support AHUB OWA Module in Allwinner SoCs.
+
+config SND_SOC_SUNXI_AHUB_DMIC
+	tristate "Allwinner AHUB DMIC support"
+	select REGMAP_MMIO
+	select SND_SOC_GENERIC_DMAENGINE_PCM
+	select SND_SOC_SUNXI_AHUB_COMMON
+	select SND_SOC_SUNXI_AHUB_MGMT
+	select SND_SOC_SUNXI_AHUB_MACH
+	help
+	  Select Y or M to support AHUB DMIC Module in Allwinner SoCs.
+
+config SND_SOC_SUNXI_DEBUG
+	tristate "Enable snd_sunxi debug"
+	default y
+	help
+	  Select Y or M to support snd_sunxi debug.
+
+config SND_SOC_SUNXI_DYNAMIC_DEBUG
+	bool "Enable audio dynamic debug"
+	default y
+	help
+	  Enable audio dynamic debug
+
+endmenu

@@ -1,0 +1,56 @@
+{
+  "modules": [
+    { "name": "aic8800_fdrv", "conditions": [ "CONFIG_AIC8800_WLAN_SUPPORT=m" ] }
+  ],
+  "flags": [
+    {
+      "name": "platform_allwinner",
+      "default_value": "false",
+      "conditions": [
+         {"config": "CONFIG_AW_BSP=y", "value": "true" }
+      ]
+    },
+    {
+      "name": "aic_intf_sdio",
+      "default_value": "false",
+      "conditions": [
+         {"config": "CONFIG_AIC_INTF_SDIO=y", "value": "true" }
+      ]
+    },
+    {
+      "name": "aic_intf_usb",
+      "default_value": "false",
+      "conditions": [
+         {"config": "CONFIG_AIC_INTF_USB=y", "value": "true" }
+      ]
+    },
+    {
+      "name": "aic_intf_pcie",
+      "default_value": "false",
+      "conditions": [
+         {"config": "CONFIG_AIC_INTF_PCIE=y", "value": "true" }
+      ]
+    },
+    {
+      "name": "nl80211_testmode",
+      "default_value": "false",
+      "conditions": [
+         {"config": "CONFIG_NL80211_TESTMODE=y", "value": "true" }
+      ]
+    },
+    {
+      "name": "debug_fs",
+      "default_value": "false",
+      "conditions": [
+         {"config": "CONFIG_DEBUG_FS=y", "value": "true" }
+      ]
+    },
+    {
+      "name": "aw_kernel_aosp",
+      "default_value": "false",
+      "conditions": [
+         {"config": "CONFIG_AW_KERNEL_AOSP=y", "value": "true" }
+      ]
+    }
+  ]
+}

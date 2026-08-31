@@ -1,0 +1,42 @@
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2026 The Allwinner BSP DDK Project
+
+load("//build/kernel/kleaf:kernel.bzl", "ddk_module", "ddk_headers")
+load("//devices/allwinner:rules.bzl", "ddk_install")
+
+ddk_headers(
+    name = "aic8800_btusb-headers",
+    hdrs = glob([
+        "*.h",
+    ]),
+    includes = [
+        ".",
+    ],
+    visibility = ["//visibility:private"],
+)
+
+ddk_module(
+    name = "aic8800_btusb",
+    srcs = [
+        "aic_btusb.c",
+    ],
+    out = "aic8800_btusb.ko",
+    copts = [
+        "-Wno-missing-prototypes",
+        "-Wno-implicit-fallthrough",
+    ],
+    defconfig = "//devices/allwinner:allwinner_defconfig.fragment",
+    kernel_build = "//devices/allwinner:allwinner_android",
+    deps = [
+        "//devices/allwinner/bsp:allwinner_bsp_headers",
+        "//devices/allwinner/bsp/drivers/net/wireless/aic8800/aic8800_bsp:aic8800_bsp-headers",
+        "//devices/allwinner/bsp/drivers/net/wireless/aic8800/aic8800_bsp:aic8800_bsp",
+        ":aic8800_btusb-headers",
+    ],
+    visibility = ["//devices/allwinner:__subpackages__"],
+)
+
+ddk_install(
+    name = "aic8800_btusb_install",
+    ddk_module = ":aic8800_btusb",
+)

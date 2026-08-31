@@ -1,0 +1,5 @@
+{
+  "modules": [
+    { "name": "aic8800_btlpm", "conditions": [ "CONFIG_AIC8800_BTLPM_SUPPORT=m" ] }
+  ]
+}

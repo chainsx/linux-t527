@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-2.0
+#
+# PCI configuration
+#
+
+menu "PCI Drivers"
+
+if PCI
+source "bsp/drivers/pci/controller/Kconfig"
+endif
+
+endmenu

@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+menu "DesignWare-based PCIe controller"
+	depends on PCI
+
+config PCIE_DW_SUNXI_HOST
+	tristate "Allwinner DesignWare PCIe controller - Host mode"
+	select PCIE_DW
+	select PCIE_DW_HOST
+	depends on PCI_MSI
+	depends on OF && AW_BSP
+	help
+	  Enables support for the DesignWare PCIe controller in the
+	  Allwinner SoCs.
+
+endmenu

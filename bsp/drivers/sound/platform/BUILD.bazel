@@ -1,0 +1,278 @@
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2026 The Allwinner BSP DDK Project
+
+load("//build/kernel/kleaf:kernel.bzl", "ddk_module", "ddk_headers")
+load("//devices/allwinner:rules.bzl", "ddk_install")
+
+ddk_headers(
+    name = "sunxi_i2s-headers",
+    hdrs = [
+        "snd_sunxi_i2s.h",
+    ],
+    includes = [
+        ".",
+    ],
+    visibility = ["//visibility:private"],
+)
+
+# @ALLWINNER_DDK_MODULE_MAP@snd_soc_sunxi_i2s@CONFIG_SND_SOC_SUNXI_I2S=m
+ddk_module(
+    name = "snd_soc_sunxi_i2s",
+    srcs = [
+        "snd_sunxi_i2s.c",
+    ],
+    conditional_srcs = {
+        "CONFIG_ARCH_SUN55IW7": {
+            True: [
+                "platforms/snd_sun55iw7_i2s.c",
+            ],
+        },
+        "CONFIG_ARCH_SUN65IW1": {
+            True: [
+                "platforms/snd_sun65iw1_i2s.c",
+            ],
+        },
+    },
+    out = "snd_soc_sunxi_i2s.ko",
+    defconfig = "//devices/allwinner:allwinner_defconfig.fragment",
+    kernel_build = "//devices/allwinner:allwinner_android",
+    deps = [
+        "//devices/allwinner/bsp:allwinner_bsp_headers",
+        "//devices/allwinner/bsp/drivers/sound:sound-headers",
+        "//devices/allwinner/bsp/drivers/sound:snd_soc_sunxi_common",
+        ":sunxi_i2s-headers",
+    ],
+    visibility = ["//devices/allwinner:__subpackages__"],
+)
+
+ddk_install(
+    name = "snd_soc_sunxi_i2s_install",
+    ddk_module = ":snd_soc_sunxi_i2s",
+)
+
+ddk_headers(
+    name = "sunxi_ahub-headers",
+    hdrs = [
+        "snd_sunxi_ahub_dam.h",
+        "snd_sunxi_ahub_i2s.h",
+    ],
+    includes = [
+        ".",
+    ],
+    visibility = ["//visibility:private"],
+)
+
+# @ALLWINNER_DDK_MODULE_MAP@snd_soc_sunxi_ahub@CONFIG_SND_SOC_SUNXI_AHUB=m
+ddk_module(
+    name = "snd_soc_sunxi_ahub",
+    srcs = [
+        "snd_sunxi_ahub_dam.c",
+        "snd_sunxi_ahub_i2s.c",
+    ],
+    conditional_srcs = {
+        "CONFIG_ARCH_SUN50IW9": {
+            True: [
+                "platforms/snd_sun50iw9_ahub.c",
+                "platforms/snd_sun50iw9_ahub_i2s.c",
+            ],
+        },
+        "CONFIG_ARCH_SUN55IW7": {
+            True: [
+                "platforms/snd_sun55iw7_ahub.c",
+                "platforms/snd_sun55iw7_ahub_i2s.c",
+            ],
+        },
+    },
+    out = "snd_soc_sunxi_ahub.ko",
+    defconfig = "//devices/allwinner:allwinner_defconfig.fragment",
+    kernel_build = "//devices/allwinner:allwinner_android",
+    deps = [
+        "//devices/allwinner/bsp:allwinner_bsp_headers",
+        "//devices/allwinner/bsp/drivers/sound:sound-headers",
+        "//devices/allwinner/bsp/drivers/sound:snd_soc_sunxi_common",
+        ":sunxi_ahub-headers",
+    ],
+    visibility = ["//devices/allwinner:__subpackages__"],
+)
+
+ddk_install(
+    name = "snd_soc_sunxi_ahub_install",
+    ddk_module = ":snd_soc_sunxi_ahub",
+)
+
+# @ALLWINNER_DDK_MODULE_MAP@snd_soc_sunxi_internal_codec@CONFIG_SND_SOC_SUNXI_INTERNALCODEC=m
+ddk_module(
+    name = "snd_soc_sunxi_internal_codec",
+    srcs = [
+        "snd_sunxi_dap.c",
+        "snd_sunxi_dap.h",
+    ],
+    conditional_srcs = {
+        "CONFIG_ARCH_SUN55IW7": {
+            True: [
+                "snd_sun55iw7_codec.c",
+                "snd_sun55iw7_codec.h",
+            ],
+        },
+        "CONFIG_ARCH_SUN65IW1": {
+            True: [
+                "snd_sun65iw1_codec.c",
+                "snd_sun65iw1_codec.h",
+            ],
+        },
+    },
+    out = "snd_soc_sunxi_internal_codec.ko",
+    defconfig = "//devices/allwinner:allwinner_defconfig.fragment",
+    kernel_build = "//devices/allwinner:allwinner_android",
+    deps = [
+        "//devices/allwinner/bsp:allwinner_bsp_headers",
+        "//devices/allwinner/bsp/drivers/sound:sound-headers",
+        "//devices/allwinner/bsp/drivers/sound:snd_soc_sunxi_common",
+    ],
+    visibility = ["//devices/allwinner:__subpackages__"],
+)
+
+ddk_install(
+    name = "snd_soc_sunxi_internal_codec_install",
+    ddk_module = ":snd_soc_sunxi_internal_codec",
+)
+
+# @ALLWINNER_DDK_MODULE_MAP@snd_soc_sunxi_machine@CONFIG_SND_SOC_SUNXI_MACH=m
+ddk_module(
+    name = "snd_soc_sunxi_machine",
+    srcs = [
+        "snd_sunxi_mach.c",
+        "snd_sunxi_mach_utils.c",
+        "snd_sunxi_mach_utils.h",
+    ],
+    out = "snd_soc_sunxi_machine.ko",
+    defconfig = "//devices/allwinner:allwinner_defconfig.fragment",
+    kernel_build = "//devices/allwinner:allwinner_android",
+    deps = [
+        "//devices/allwinner/bsp:allwinner_bsp_headers",
+        "//devices/allwinner/bsp/drivers/sound:sound-headers",
+        "//devices/allwinner/bsp/drivers/sound:snd_soc_sunxi_common",
+    ],
+    visibility = ["//devices/allwinner:__subpackages__"],
+)
+
+ddk_install(
+    name = "snd_soc_sunxi_machine_install",
+    ddk_module = ":snd_soc_sunxi_machine",
+)
+
+# @ALLWINNER_DDK_MODULE_MAP@snd_soc_sunxi_aaudio@CONFIG_SND_SOC_SUNXI_AAUDIO=m
+ddk_module(
+    name = "snd_soc_sunxi_aaudio",
+    srcs = [
+        "snd_sunxi_aaudio.c",
+    ],
+    out = "snd_soc_sunxi_aaudio.ko",
+    defconfig = "//devices/allwinner:allwinner_defconfig.fragment",
+    kernel_build = "//devices/allwinner:allwinner_android",
+    deps = [
+        "//devices/allwinner/bsp:allwinner_bsp_headers",
+        "//devices/allwinner/bsp/drivers/sound:sound-headers",
+        "//devices/allwinner/bsp/drivers/sound:snd_soc_sunxi_common",
+    ],
+    visibility = ["//devices/allwinner:__subpackages__"],
+)
+
+ddk_install(
+    name = "snd_soc_sunxi_aaudio_install",
+    ddk_module = ":snd_soc_sunxi_aaudio",
+)
+
+ddk_headers(
+    name = "sunxi_owa-headers",
+    hdrs = [
+        "snd_sunxi_owa.h",
+    ],
+    includes = [
+        ".",
+        "platform",
+    ],
+    visibility = ["//visibility:private"],
+)
+
+# @ALLWINNER_DDK_MODULE_MAP@snd_soc_sunxi_owa@CONFIG_SND_SOC_SUNXI_OWA=m
+ddk_module(
+    name = "snd_soc_sunxi_owa",
+    srcs = [
+        "snd_sunxi_owa.c",
+    ],
+    conditional_srcs = {
+        "CONFIG_ARCH_SUN55IW7": {
+            True: [
+                "platforms/snd_sun55iw7_owa.c",
+            ],
+        },
+        "CONFIG_ARCH_SUN65IW1": {
+            True: [
+                "platforms/snd_sun65iw1_owa.c",
+            ],
+        },
+        "CONFIG_SND_SOC_SUNXI_OWA_RXIEC61937": {
+            True: [
+                "snd_sunxi_owa_rx61937.c",
+                "snd_sunxi_owa_rx61937.h",
+            ],
+        },
+    },
+    out = "snd_soc_sunxi_owa.ko",
+    defconfig = "//devices/allwinner:allwinner_defconfig.fragment",
+    kernel_build = "//devices/allwinner:allwinner_android",
+    deps = [
+        "//devices/allwinner/bsp:allwinner_bsp_headers",
+        "//devices/allwinner/bsp/drivers/sound:sound-headers",
+        "//devices/allwinner/bsp/drivers/sound:snd_soc_sunxi_common",
+        ":sunxi_owa-headers",
+    ],
+    visibility = ["//devices/allwinner:__subpackages__"],
+)
+
+ddk_install(
+    name = "snd_soc_sunxi_owa_install",
+    ddk_module = ":snd_soc_sunxi_owa",
+)
+
+ddk_headers(
+    name = "sunxi_dmic-headers",
+    hdrs = [
+        "snd_sunxi_dmic.h",
+    ],
+    includes = [
+        ".",
+    ],
+    visibility = ["//visibility:private"],
+)
+
+# @ALLWINNER_DDK_MODULE_MAP@snd_soc_sunxi_dmic@CONFIG_SND_SOC_SUNXI_DMIC=m
+ddk_module(
+    name = "snd_soc_sunxi_dmic",
+    srcs = [
+        "snd_sunxi_dmic.c",
+    ],
+    conditional_srcs = {
+        "CONFIG_ARCH_SUN65IW1": {
+            True: [
+                "platforms/snd_sun65iw1_dmic.c",
+            ],
+        },
+    },
+    out = "snd_soc_sunxi_dmic.ko",
+    defconfig = "//devices/allwinner:allwinner_defconfig.fragment",
+    kernel_build = "//devices/allwinner:allwinner_android",
+    deps = [
+        "//devices/allwinner/bsp:allwinner_bsp_headers",
+        "//devices/allwinner/bsp/drivers/sound:sound-headers",
+        "//devices/allwinner/bsp/drivers/sound:snd_soc_sunxi_common",
+        ":sunxi_dmic-headers",
+    ],
+    visibility = ["//devices/allwinner:__subpackages__"],
+)
+
+ddk_install(
+    name = "snd_soc_sunxi_dmic_install",
+    ddk_module = ":snd_soc_sunxi_dmic",
+)

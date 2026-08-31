@@ -1,0 +1,8 @@
+obj-$(CONFIG_AIC8800_BTLPM_SUPPORT) += aic8800_btlpm/
+obj-$(CONFIG_AIC8800_BTUSB_SUPPORT) += aic8800_btusb/
+ifeq ($(CONFIG_AIC_INTF_PCIE), y)
+obj-$(CONFIG_AIC8800_WLAN_SUPPORT) += aic8800p_fdrv/
+else
+obj-$(CONFIG_AIC8800_WLAN_SUPPORT) += aic8800_fdrv/
+obj-$(CONFIG_AIC_WLAN_SUPPORT) += aic8800_bsp/
+endif

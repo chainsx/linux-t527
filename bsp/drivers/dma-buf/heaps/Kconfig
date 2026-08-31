@@ -1,0 +1,7 @@
+config AW_DMABUF_HEAPS_SYSTEM_UNCACHED
+	bool "AW DMA-BUF System-Uncached Heap"
+	depends on DMABUF_HEAPS
+	default n
+	help
+	  Choose this option to enable the system-uncached dmabuf heap. The system-uncached heap
+	  is backed by pages from the buddy allocator. If in doubt, say Y.

@@ -1,0 +1,35 @@
+{
+  "modules": [
+    { "name": "aic8800_bsp", "conditions": [ "CONFIG_AIC_WLAN_SUPPORT=y" ] }
+  ],
+  "flags": [
+    {
+      "name": "platform_allwinner",
+      "default_value": "false",
+      "conditions": [
+         {"config": "CONFIG_AW_BSP=y", "value": "true" }
+      ]
+    },
+    {
+      "name": "aic_intf_sdio",
+      "default_value": "false",
+      "conditions": [
+         {"config": "CONFIG_AIC_INTF_SDIO=y", "value": "true" }
+      ]
+    },
+    {
+      "name": "aic_intf_usb",
+      "default_value": "false",
+      "conditions": [
+         {"config": "CONFIG_AIC_INTF_USB=y", "value": "true" }
+      ]
+    },
+    {
+      "name": "usb_msg_ep",
+      "default_value": "false",
+      "conditions": [
+         {"config": "CONFIG_USB_MSG_EP=y", "value": "true" }
+      ]
+    }
+  ]
+}

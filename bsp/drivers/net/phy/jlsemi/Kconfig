@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+
+config JLSEMI_PHY
+	tristate "JLSEMI PHYs"
+	help
+		Currently has a driver for the jlsemi
