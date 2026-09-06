@@ -218,7 +218,7 @@ static int rpmsg_heartbeat_platform_probe(struct platform_device *pdev)
 	}
 
 	/* Create a path: sys/class/rpmsg_heartbeat */
-	rpmsg_heartbeat_class = class_create(THIS_MODULE, "rpmsg_heartbeat");
+	rpmsg_heartbeat_class = class_create("rpmsg_heartbeat");
 	if (IS_ERR(rpmsg_heartbeat_class)) {
 		dev_err(&pdev->dev, "Error:rpmsg_heartbeat class_create fail\n");
 		return -1;

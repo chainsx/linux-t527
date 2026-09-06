@@ -1003,7 +1003,7 @@ static int rpmsg_ctrldev_init(void)
 	}
 
 #ifdef CONFIG_AW_RPMSG_CLASS
-	g_aw_rpmsg_class = class_create(THIS_MODULE, AW_RPMSG_CLASS_NAME);
+	g_aw_rpmsg_class = class_create(AW_RPMSG_CLASS_NAME);
 	if (IS_ERR(g_aw_rpmsg_class)) {
 		pr_err("failed to create aw rpmsg class\n");
 		unregister_chrdev_region(rpmsg_major, RPMSG_DEV_MAX);

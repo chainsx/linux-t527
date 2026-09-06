@@ -32,6 +32,7 @@
 #include <media/v4l2-subdev.h>
 #include <media/videobuf2-dma-contig.h>
 #include <linux/dma-buf.h>
+MODULE_IMPORT_NS(DMA_BUF);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
 #include <linux/dma-heap.h>
 #endif

@@ -100,11 +100,6 @@
 	};
 
 	reserved-memory {
-		dsp0ddr_reserved: dsp0ddr@4a000000 {
-			reg = <0x0 0x4a000000 0x0 0x00a00000>;
-			no-map;
-		};
-
 		riscvsram0_reserved: riscvsram0@7280000 {
 			reg = <0x0 0x07280000 0x0 0x40000>;
 			no-map;
@@ -112,40 +107,6 @@
 
 		riscvsram1_reserved: riscvsram1@72c0000 {
 			reg = <0x0 0x072c0000 0x0 0x40000>;
-			no-map;
-		};
-
-		e906_dram_reserved: e906_dram@60000000 {
-			reg = <0x0 0x60000000 0x0 0x00a00000>;
-			no-map;
-		};
-
-		/*
-		* The name should be "vdev%dbuffer".
-		* Its size should be not less than
-		*     RPMSG_BUF_SIZE * (num of buffers in a vring) * 2
-		*   = 512 * (num of buffers in a vring) * 2
-		*/
-		dsp_vdev0buffer: vdev0buffer@4ac00000 {
-			compatible = "shared-dma-pool";
-			reg = <0x0 0x4ac00000 0x0 0x40000>;
-			no-map;
-		};
-
-		/*
-		* The name should be "vdev%dvring%d".
-		* The size of each should be not less than
-		*     PAGE_ALIGN(vring_size(num, align))
-		*   = PAGE_ALIGN(16 * num + 6 + 2 * num + (pads for align) + 6 + 8 * num)
-		*
-		* (Please refer to the vring layout in include/uapi/linux/virtio_ring.h)
-		*/
-		dsp_vdev0vring0: vdev0vring0@4ac40000 {
-			reg = <0x0 0x4ac40000 0x0 0x2000>;
-			no-map;
-		};
-		dsp_vdev0vring1: vdev0vring1@4ac42000 {
-			reg = <0x0 0x4ac42000 0x0 0x2000>;
 			no-map;
 		};
 
@@ -178,42 +139,7 @@
 			no-map;
 		};
 
-		/*
-		* mcu ram addr
-		*/
-		mcu0iram_reserved: mcu0iram@20000 {
-			reg = <0x0 0x20000 0x0 0x10000>;
-			no-map;
-		};
-		mcu0dram0_reserved: mcu0dram0@30000 {
-			reg = <0x0 0x30000 0x0 0x8000>;
-			no-map;
-		};
-		mcu0dram1_reserved: mcu0dram1@38000 {
-			reg = <0x0 0x38000 0x0 0x8000>;
-			no-map;
-		};
-
-		dsp0_rpbuf_reserved: dsp0_rpbuf@4ae44000 {
-			compatible = "shared-dma-pool";
-			no-map;
-			reg = <0x0 0x4ae44000 0x0 0x8000>;
-		};
-
-		dsp_share_space@4ab00000 {
-			no-map;
-			reg = <0x0 0x4ab00000 0x0 0x10000>;
-		};
 	};
-
-	rpbuf_controller0: rpbuf_controller@0 {
-		compatible = "allwinner,rpbuf-controller";
-		remoteproc = <&dsp0_rproc>;
-		ctrl_id = <0>;
-		memory-region = <&dsp0_rpbuf_reserved>;
-		status = "okay";
-	};
-
 	edp_panel_backlight: edp_backlight {
 		compatible = "pwm-backlight";
 		status = "disabled";
@@ -1156,41 +1082,10 @@
 		status = "okay";
 	};
 
-	dsp0_rproc: dsp0_rproc@0 {
-		mboxes = <&msgbox 4>;
-		mbox-names = "arm-kick";
-		memory-region = <&dsp0ddr_reserved>, <&dsp_vdev0buffer>, <&dsp_vdev0vring0>, <&dsp_vdev0vring1>,
-				<&mcu0iram_reserved>, <&mcu0dram0_reserved>, <&mcu0dram1_reserved>;
-		memory-mappings =
-			/* < DA         len             PA >    */
-			/* local SRAM via external bus */
-			< 0x20000       0x20000         0x20000 >,
-			/* local SRAM via internal bus */
-			< 0x400000      0x10000         0x20000 >,
-			< 0x420000      0x8000          0x30000 >,
-			< 0x440000      0x8000          0x38000 >,
-			/* DDR front 256MB */
-			< 0x10000000    0x10000000      0x40000000 >,
-			/* local SRAM via internal bus */
-			< 0x20020000    0x10000         0x400000 >,
-			< 0x20030000    0x8000          0x420000 >,
-			< 0x20038000    0x8000          0x440000 >,
-
-			/* DDR front 256MB */
-			< 0x30000000    0x10000000      0x40000000 >,
-			/* DDR front 1GB */
-			< 0x40000000    0x40000000      0x40000000 >,
-			/* DDR front 1GB */
-			< 0x80000000    0x40000000      0x40000000 >,
-			/* DDR front 1GB */
-			< 0xC0000000    0x40000000      0x40000000 >;
-		status = "okay";
-	};
-
 	e906_rproc: e906_rproc@7130000 {
 		mboxes = <&msgbox 8>, <&msgbox 10>;
 		mbox-names = "arm-kick", "arm-standby";
-		memory-region = <&riscvsram0_reserved>, <&riscvsram1_reserved>, <&rv_vdev0buffer>, <&rv_vdev0vring0>, <&rv_vdev0vring1>, <&e906_dram_reserved>;
+		memory-region = <&riscvsram0_reserved>, <&riscvsram1_reserved>, <&rv_vdev0buffer>, <&rv_vdev0vring0>, <&rv_vdev0vring1>;
 		memory-mappings =
 			/* < DA		len		PA >	*/
 			/* DSP RAM */
