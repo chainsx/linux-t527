@@ -43,3 +43,4 @@ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h616-x96-mate.dtb
 dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h618-orangepi-zero3.dtb
 dtb-$(CONFIG_ARCH_SUNXI) += sun55i-a527-pro2-linux-aiot.dtb
 dtb-$(CONFIG_ARCH_SUNXI) += sun55i-a527-ahd-a527.dtb
+dtb-$(CONFIG_ARCH_SUNXI) += sun55i-t527-avaota-a1.dtb
