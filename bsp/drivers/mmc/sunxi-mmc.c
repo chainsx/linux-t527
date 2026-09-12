@@ -3836,19 +3836,19 @@ static int sunxi_mmc_resource_request(struct sunxi_mmc_host *host,
 		goto error_disable_regulator;
 	}
 
-	host->clk_mbus = devm_clk_get(&pdev->dev, "mmc_mbus");
+	host->clk_mbus = devm_clk_get_optional(&pdev->dev, "mmc_mbus");
 	if (IS_ERR(host->clk_mbus)) {
-		SM_ERR(&pdev->dev, "Could not get mbus clock\n");
+		SM_DBG(&pdev->dev, "Could not get mbus clock\n");
 	}
 
-	host->clk_store = devm_clk_get(&pdev->dev, "mmc_store");
+	host->clk_store = devm_clk_get_optional(&pdev->dev, "mmc_store");
 	if (IS_ERR(host->clk_store)) {
-		SM_ERR(&pdev->dev, "Could not get store clock\n");
+		SM_DBG(&pdev->dev, "Could not get store clock\n");
 	}
 
-	host->clk_msi_lite = devm_clk_get(&pdev->dev, "mmc_msi_lite");
+	host->clk_msi_lite = devm_clk_get_optional(&pdev->dev, "mmc_msi_lite");
 	if (IS_ERR(host->clk_msi_lite)) {
-		SM_ERR(&pdev->dev, "Could not get msi_lite clock\n");
+		SM_DBG(&pdev->dev, "Could not get msi_lite clock\n");
 	}
 
 	host->clk_mmc = devm_clk_get(&pdev->dev, "mmc");

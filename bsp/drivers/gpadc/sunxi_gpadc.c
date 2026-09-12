@@ -1349,7 +1349,7 @@ static int sunxi_gpadc_dts_parse(struct sunxi_gpadc *chip)
 			snprintf(name, sizeof(name), "channel%d_compare_lowdata", i);
 			if (of_property_read_u32(np, name, &val)) {
 				sunxi_err(chip->dev, "%s:get %s err!\n", __func__, name);
-				val = 0;
+				return -EINVAL;
 			}
 			config->cmp_lowdata[i] = val;
 		}
@@ -1358,7 +1358,7 @@ static int sunxi_gpadc_dts_parse(struct sunxi_gpadc *chip)
 			snprintf(name, sizeof(name), "channel%d_compare_higdata", i);
 			if (of_property_read_u32(np, name, &val)) {
 				sunxi_err(chip->dev, "%s:get %s err!\n", __func__, name);
-				val = 0;
+				return -EINVAL;
 			}
 			config->cmp_highdata[i] = val;
 		}

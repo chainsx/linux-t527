@@ -691,7 +691,7 @@ u32 determine_dcxo_clk_source(void)
 {
 	struct clk *dcxo_rate;
 	u32 clock_rate;
-	dcxo_rate = clk_get(NULL, "dcxo");
+	dcxo_rate = clk_get(NULL, "dcxo24M");
 	if (IS_ERR(dcxo_rate)) {
 		sunxi_err(NULL, "failed to get dcxo clock source\n");
 		return 0;

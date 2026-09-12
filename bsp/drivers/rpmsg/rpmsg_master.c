@@ -42,11 +42,7 @@
 
 #ifdef CONFIG_AW_RPMSG_CLASS
 
-#if IS_ENABLED(CONFIG_RPMSG_CHAR)
 #define AW_RPMSG_CLASS_NAME "aw_rpmsg"
-#else
-#define AW_RPMSG_CLASS_NAME "rpmsg"
-#endif
 
 struct class *g_aw_rpmsg_class;
 EXPORT_SYMBOL(g_aw_rpmsg_class);

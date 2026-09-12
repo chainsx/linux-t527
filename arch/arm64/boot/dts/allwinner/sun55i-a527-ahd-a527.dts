@@ -743,12 +743,12 @@ status = "okay";
 	vcc-pk-supply = <&reg_dcdc4>;/*fixed,embfly*/
 	
 	uart0_pins_a: uart0_pins@0 {
-		pins = "", "";
+		pins = "PB9", "PB10";
 		function = "uart0";
 	};
 
 	uart0_pins_b: uart0_pins@1 {
-		pins = "", "";
+		pins = "PB9", "PB10";
 		function = "gpio_in";
 	};
 
@@ -1353,12 +1353,13 @@ status = "okay";
 };
 
 &gpadc0 {
+	gpadc_sample_rate = <1000>;
 	channel_num = <8>;
 	channel_select = <0xf8>;/* 11111000:3-7ch*/
 	channel_data_select = <0xf8>;
-	channel_compare_select = <0xf8>;
-	channel_cld_select = <0xf8>;
-	channel_chd_select = <0xf8>;
+	channel_compare_select = <0>;
+	channel_cld_select = <0>;
+	channel_chd_select = <0>;
 /*	channel0_compare_lowdata = <1700000>;
 	channel0_compare_higdata = <120000>;
 	channel1_compare_lowdata = <460000>;
@@ -2365,6 +2366,11 @@ status = "okay";
 		pmu_hot_shutdown = <1>;
 
 		wakeup-source;
+
+		axp2202_gpio: gpio {
+			compatible = "x-powers,axp2202-gpio";
+			status = "disabled";
+		};
 		
 		/*usb_power_supply used,
 		when usb_det_vbus_gpio=”axp_ctrl”*/
@@ -2480,6 +2486,16 @@ status = "okay";
 			/* wakeup_bat_ovtemp_work; */
 			/* wakeup_bat_untemp_chg; */
 			/* wakeup_bat_ovtemp_chg; */
+		};
+
+		acin_power_supply: acin-power-supply {
+			compatible = "x-powers,axp2202-acin-power-supply";
+			status = "disabled";
+		};
+
+		cc_logic: cc-logic {
+			compatible = "x-powers,axp2202-cc-logic";
+			status = "disabled";
 		};
 
 		powerkey0: powerkey@0 {
